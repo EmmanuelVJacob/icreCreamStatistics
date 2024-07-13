@@ -18,7 +18,6 @@ const RevenuePerMonth = () => {
         error: false,
       });
       const { itemRevenueByMonth } = await getRevenuePerMonth(); 
-      console.log(itemRevenueByMonth, "this is the itemRevenueByMonth");
 
       const MonstRevenueItems = Object.keys(itemRevenueByMonth).map(
         (month) => ({
