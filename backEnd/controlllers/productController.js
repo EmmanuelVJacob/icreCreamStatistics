@@ -4,9 +4,8 @@ const data = await getDataFromFile();
 
 const getData = async (req, res) => {
   try {
-  
-    let page = parseInt(req.body.page); 
-    const pageSize = 10; 
+    let page = parseInt(req.body.page);
+    const pageSize = 10;
 
     if (!page || page < 1) {
       page = 1;
@@ -25,13 +24,10 @@ const getData = async (req, res) => {
 
 const calculateTotalSales = async (req, res) => {
   try {
-
-    let totalSales = 0;
-
-    data.forEach((record) => {
-      totalSales += record["Total Price"];
-    });
-
+    let totalSales = data.reduce((total, record) => {
+      total += record["Total Price"];
+      return total;
+    }, 0);
     return res.json(totalSales);
   } catch (err) {
     console.error("Error calculating total sales:", err);
@@ -41,8 +37,6 @@ const calculateTotalSales = async (req, res) => {
 
 const calculateTotalSalesByMonth = async (req, res) => {
   try {
-  
-
     const monthlySales = {};
 
     const monthNames = [
@@ -59,11 +53,9 @@ const calculateTotalSalesByMonth = async (req, res) => {
       "November",
       "December",
     ];
-
     data.forEach((record) => {
       const date = new Date(record.Date);
       const monthName = monthNames[date.getMonth()];
-
       if (!monthlySales[monthName]) {
         monthlySales[monthName] = 0;
       }
@@ -83,10 +75,9 @@ const calculateTotalSalesByMonth = async (req, res) => {
 
 const findMostPopularItemByMonth = async (req, res) => {
   try {
-
     const monthlyPopularItems = data.reduce((acc, record) => {
       const date = new Date(record.Date);
-      const month = date.getMonth() + 1; 
+      const month = date.getMonth();
 
       if (!acc[month]) {
         acc[month] = { item: "", quantity: 0 };
@@ -116,9 +107,8 @@ const findMostPopularItemByMonth = async (req, res) => {
       "November",
       "December",
     ];
-
     const result = Object.keys(monthlyPopularItems).map((month) => ({
-      month: monthNames[month - 1],
+      month: monthNames[month],
       item: monthlyPopularItems[month].item,
       quantity: monthlyPopularItems[month].quantity,
     }));
@@ -136,7 +126,6 @@ const findMostPopularItemByMonth = async (req, res) => {
 
 const calculateTopItemsPerMonth = async (req, res) => {
   try {
-  
     const monthNames = [
       "January",
       "February",
@@ -156,7 +145,7 @@ const calculateTopItemsPerMonth = async (req, res) => {
 
     data.forEach((record) => {
       const date = new Date(record.Date);
-      const monthName = monthNames[date.getMonth()]; 
+      const monthName = monthNames[date.getMonth()];
 
       if (!itemRevenueByMonth[monthName]) {
         itemRevenueByMonth[monthName] = {
@@ -225,12 +214,13 @@ const findMostPopularItemStatisticsByMonth = async (req, res) => {
           : maxItem
     );
 
+
     const orderStatsByMonth = {};
 
     data.forEach((record) => {
       if (record.SKU === mostPopularItem) {
         const date = new Date(record.Date);
-        const month = date.getMonth(); 
+        const month = date.getMonth();
 
         if (!orderStatsByMonth[month]) {
           orderStatsByMonth[month] = {
@@ -265,6 +255,8 @@ const findMostPopularItemStatisticsByMonth = async (req, res) => {
       maxOrders: orderStatsByMonth[month].maxOrders,
       averageOrders: orderStatsByMonth[month].averageOrders.toFixed(2),
     }));
+
+
 
     if (result.length === 0) {
       return res.json("No sales happened");

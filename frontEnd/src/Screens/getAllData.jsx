@@ -43,7 +43,7 @@ const GetAllData = () => {
     <>
       {apiCall.loading && !apiCall.error && <Loading />}
       {!apiCall.loading && !apiCall.error && (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 bg-slate-100">
           <h1 className="text-3xl md:text-4xl text-center font-bold mb-6 text-gray-800">
             All Products
           </h1>
